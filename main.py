@@ -1,6 +1,7 @@
 from Pyro4 import expose
 from heapq import merge
 
+
 class Solver:
     def __init__(self, workers=None, input_file_name=None, output_file_name=None):
         self.input_file_name = input_file_name
@@ -21,21 +22,18 @@ class Solver:
     @staticmethod
     @expose
     def mymap(array):
-        array_len = len(array)
-        gap = array_len // 2
+        n = len(array)
+        interval = n // 2
+        while interval > 0:
+            for i in range(interval, n):
+                temp = array[i]
+                j = i
+                while j >= interval and array[j - interval] > temp:
+                    array[j] = array[j - interval]
+                    j -= interval
 
-        while gap > 0:
-            j = gap
-            while j < array_len:
-                i = j - gap
-                while i >= 0:
-                    if array[i + gap] > array[i]:
-                        break
-                    else:
-                        array[i + gap], array[i] = array[i], array[i + gap]
-                    i = i - gap
-                j += 1
-            gap = gap // 2
+                array[j] = temp
+            interval //= 2
         return array
 
     @staticmethod
